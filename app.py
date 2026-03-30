@@ -6,8 +6,8 @@ DATEI = "aufzeichnung.txt"
 
 
 def aufzeichnen(ort, datum, sterne):
-    datei=open(DATEI, "a"):
-    datei.write(f"{ort},{datum},{sterne}\n")
+    with open(DATEI, "a") as datei:
+        datei.write(f"{ort},{datum},{sterne}\n")
 
 st.title("⛳ Golf-Tracker")
 
