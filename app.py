@@ -1,64 +1,54 @@
+# golf_tracker_app.py
 import streamlit as st
+import os
 
+DATEI = "aufzeichnung.txt"
 
-# --- KONFIGURATION (Hier deine Daten eintragen) ---
-REPO_NAME = "DEIN_NUTZERNAME/DEIN_REPO"
-DATEI_PFAD = "aufzeichnung.txt"
+# --- Funktion zum Aufzeichnen ---
+def aufzeichnen(ort, datum, sterne):
+    with open(DATEI, "a", encoding="utf-8") as datei:
+        datei.write(f"{ort},{datum},{sterne}\n")
 
-# Session State initialisieren, damit die Seite sich merkt, wo wir sind
-if 'step' not in st.session_state:
-    st.session_state.step = "start"
+# --- Funktion zum Lesen ---
+def lesen():
+    if not os.path.exists(DATEI):
+        return []
+    with open(DATEI, "r", encoding="utf-8") as datei:
+        text = datei.readlines()
+    daten = []
+    for zeile in text:
+        ort, datum, sterne = zeile.strip().split(",")
+        daten.append({"Ort": ort, "Datum": datum, "Bewertung": sterne})
+    return daten
 
-st.title("🏌️ Golf Merker")
+# --- Streamlit UI ---
+st.title("⛳ Golf-Tracker")
 
-# SCHRITT 1: Start-Button
-if st.session_state.step == "start":
-    if st.button("Aufzeichnen"):
-        st.session_state.step = "platz_wahl"
-        st.rerun()
+menu = st.sidebar.selectbox("Menü auswählen", ["Aufzeichnen", "Lesen"])
 
-# SCHRITT 2: Golfplatz wählen
-if st.session_state.step == "platz_wahl":
-    st.write("Auf welchem Golfplatz hast du gespielt?")
-    col1, col2 = st.columns(2)
+if menu == "Aufzeichnen":
+    st.header("Neue Runde eintragen")
     
-    if col1.button("Golfplatz Gastein"):
-        st.session_state.ort = "Golfplatz Gastein"
-        st.session_state.step = "details"
-        st.rerun()
-    if col2.button("Anderer Platz"):
-        st.session_state.ort = "Anderer Platz"
-        st.session_state.step = "details"
-        st.rerun()
-
-# SCHRITT 3: Details eingeben (Datum, Bewertung)
-if st.session_state.step == "details":
-    st.subheader(f"Details für {st.session_state.ort}")
+    ort_option = st.radio("Ort auswählen oder eigenen Ort eingeben", ["Gastein", "Anderer Ort"])
+    if ort_option == "Gastein":
+        ort = "Gastein"
+    else:
+        ort = st.text_input("Gib den Ort ein")
     
-    datum = st.date_input("Wann hast du gespielt?")
-    bewertung = st.feedback("stars") # 0-4 Sterne (entspricht 1-5)
-
+    datum = st.date_input("Datum der Runde")
+    sterne = st.slider("Bewertung (1=schlecht, 5=sehr gut)", 1, 5, 3)
+    
     if st.button("Speichern"):
-        # Daten für die Datei formatieren
-        eintrag = f"{datum} | {st.session_state.ort} | Sterne: {bewertung + 1}\n"
-        
-        # --- GITHUB SPEICHER-LOGIK ---
-        try:
-            g = Github(st.secrets["GITHUB_TOKEN"])
-            repo = g.get_repo(REPO_NAME)
-            contents = repo.get_contents(DATEI_PFAD)
-            
-            # Neue Zeile an bestehenden Inhalt anhängen
-            neuer_inhalt = contents.decoded_content.decode() + eintrag
-            repo.update_file(contents.path, "Neuer Golf-Eintrag", neuer_inhalt, contents.sha)
-            
-            st.success("Erfolgreich in der Cloud gespeichert!")
-            st.session_state.step = "start" # Zurück zum Anfang
-        except Exception as e:
-            st.error(f"Fehler beim Speichern: {e}")
+        if ort:
+            aufzeichnen(ort, datum, sterne)
+            st.success(f"Runde auf {ort} am {datum} mit {sterne} Stern(en) gespeichert!")
+        else:
+            st.error("Bitte Ort eingeben!")
 
-# OPTIONAL: Daten wieder ausgeben
-if st.button("Meine Spiele anzeigen"):
-    # Hier könntest du die Datei von GitHub laden und mit st.text() anzeigen
-    st.info("Diese Funktion kann die Daten aus der 'aufzeichnung.txt' laden.")
-
+elif menu == "Lesen":
+    st.header("Alle Aufzeichnungen")
+    daten = lesen()
+    if daten:
+        st.table(daten)
+    else:
+        st.info("Noch keine Aufzeichnungen vorhanden.")
