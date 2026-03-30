@@ -9,7 +9,7 @@ def aufzeichnen(ort, datum, sterne):
     with open(DATEI, "a") as datei:
         datei.write(f"{ort},{datum},{sterne}\n")
 
-st.title("⛳ Golf-Tracker")
+st.title("⛳ Golf")
 
 menu = st.sidebar.selectbox("Menü auswählen", ["Aufzeichnen", "Lesen"])
 
