@@ -11,5 +11,7 @@ st.write("🏌️⛳")
 st.write("Auf welche Goflplatz hast du gerade gespielt?")
 
 if st.button("Golfplatz Gastein ⛳"):
+    st.write("ab")
 
 if st.button("Ein anderer Golfplatz ⛳"):
+    st.write("a")
