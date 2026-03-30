@@ -11,17 +11,12 @@ st.write("🏌️⛳")
 if st.button("Aufzeichnen"):
     st.session_state.step = 1
     st.write("Auf welche Goflplatz hast du gerade gespielt?")
+    
     if st.session_state.step >= 1:
     col1, col2 = st.columns(2)
-    if col1.button("Option A"):
-        st.session_state.step = 2
-    if col2.button("Option B"):
-        st.session_state.step = 2
+        if col1.button("Option A"):
+            st.session_state.step = 2
+        if col2.button("Option B"):
+            st.session_state.step = 2
 
-    if st.button("Golfplatz Gastein ⛳"):
-        ort = ("Golfplatz Gastein")
-        
-    if st.button("Ein anderer Golfplatz ⛳"):
-        ort = st.text_input("Gib hier den Platz ein")
-if st.button("A"):
-    st.write("aaaa")
+  
