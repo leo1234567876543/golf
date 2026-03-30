@@ -1,5 +1,5 @@
 import streamlit as st
-from github import Github
+
 
 # --- KONFIGURATION (Hier deine Daten eintragen) ---
 REPO_NAME = "DEIN_NUTZERNAME/DEIN_REPO"
