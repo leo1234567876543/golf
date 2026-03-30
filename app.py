@@ -12,9 +12,9 @@ if st.button("Aufzeichnen"):
     st.write("Auf welche Goflplatz hast du gerade gespielt?")
 
     if st.button("Golfplatz Gastein ⛳"):
-        st.write("ab")
-
+        ort = ("Golfplatz Gastein")
+        
     if st.button("Ein anderer Golfplatz ⛳"):
-        st.write("a")
+        ort = st.text_input("Gib hier den Platz ein")
 if st.button("A"):
     st.write("aaaa")
