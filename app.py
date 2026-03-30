@@ -13,7 +13,7 @@ if st.button("Aufzeichnen"):
     st.write("Auf welche Goflplatz hast du gerade gespielt?")
     
     if st.session_state.step >= 1:
-    col1, col2 = st.columns(2)
+        col1, col2 = st.columns(2)
         if col1.button("Option A"):
             st.session_state.step = 2
         if col2.button("Option B"):
