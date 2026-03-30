@@ -12,10 +12,10 @@ if st.button("Aufzeichnen"):
     butt = 1
     st.write("Auf welche Goflplatz hast du gerade gespielt?")
     
-    if butt == 1:
-        if st.buton("Golfplatz Gastein): 
-            ort = ("Golfplatz Gastein")
-            st.success("Gastein")            
+    if butt == 1 and st.button("Golfplatz Gastein): 
+      
+        ort = ("Golfplatz Gastein")
+        st.success("Gastein")            
             
            
         if st.button("Option B"):
