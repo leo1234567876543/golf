@@ -7,4 +7,4 @@ st.text("Wähle aus was du machen möchtest!")
 
 if st.button("Aufzeichnung Platz"):
     datei=open("aufzeichnung.txt", "a")
-    print(datei)
+    st.info(f"Du warst schon einmal in {datei}!")
