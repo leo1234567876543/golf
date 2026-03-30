@@ -13,11 +13,9 @@ if st.button("Aufzeichnen"):
     st.write("Auf welche Goflplatz hast du gerade gespielt?")
     
     if butt == 1:
-        
-        if st.button("Golfplatz Gastein):
-            
+        if st.button("Golfplatz Gastein): 
             ort = ("Golfplatz Gastein")
-            
+            st.success("Gastein")            
             
            
         if st.button("Option B"):
