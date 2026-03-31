@@ -17,6 +17,9 @@ if menue=="Aufzeichnen":
   gutes=st.text_input("Schreibe mind. 1 Gute Sache von deinem Spiel auf")
   if st.button("Speichern"):
       datei=open("aufzeichnung.txt", "a")
-      schreiben=ort and datum and sterne and gutes
+      schreiben = f"{eintrag_ort},{datum},{sterne},{gutes}\n"
+      
       datei.write(schreiben)
       datei.close()
+      
+      st.success("Erfolgreich gespeichert!")
