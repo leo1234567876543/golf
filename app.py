@@ -18,6 +18,13 @@ if menue=="Aufzeichnen":
   
 import pandas as pd
 
+uploaded_file = st.file_uploader("Lade deine bestehende CSV hoch (optional)", type=["csv"])
+
+if uploaded_file is not None:
+    df = pd.read_csv(uploaded_file)
+else:
+    df = pd.DataFrame(columns=["Ort", "Datum", "Bewertung", "Gut"])
+
 if "daten" not in st.session_state:
     st.session_state.daten = []
 
