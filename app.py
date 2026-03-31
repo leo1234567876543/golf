@@ -35,8 +35,16 @@ if st.button("Speichern"):
         "Bewertung": sterne,
         "Gut": gutes
     }
-    st.session_state.daten.append(neuer_eintrag)
+
+    df = pd.concat([df, pd.DataFrame([neuer_eintrag])], ignore_index=True)
+
     st.success("Gespeichert!")
+
+    st.download_button(
+        "Aktualisierte Datei herunterladen",
+        df.to_csv(index=False),
+        "golf.csv"
+    )
 
 # Download anbieten
 if st.session_state.daten:
