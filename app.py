@@ -7,7 +7,7 @@ menue=st.sidebar.selectbox("Wähl bitte zwischen", ["Aufzeichnen", "Lesen"])
 
 if menue=="Aufzeichnen":
   st.text("Neues Ereigniss eintragen")
-  ort=st.radio("Wähl hier bitte den Ort aus wo du gespielt hast", ["Gastein", "In einen anderen Ort"]
+  ort=st.radio("Wähl hier bitte den Ort aus wo du gespielt hast", ["Gastein", "In einen anderen Ort"])
   if ort=="Gastein":
         eintrag_ort="Gastein"
   if ort=="In einen anderen Ort":
