@@ -16,4 +16,6 @@ if menue=="Aufzeichnen":
   sterne=st.slider("Gib hier deine eigene Bewertung ein (1 Schlecht - 10 Gut)", 1, 10, 3)
   gutes=st.text_input("Schreibe mind. 1 Gute Sache von deinem Spiel auf")
   if st.button("Speichern"):
-      st.text("ab")
+      datei=open("aufzeichnung.txt", "a")
+      datei.write(ort, datum, sterne, gutes)
+      datei.close()
