@@ -13,4 +13,4 @@ if menue=="Aufzeichnen":
   if ort=="In einen anderen Ort":
         eintrag_ort=st.text_input("Gib hier den Ort ein")
   datum=st.date_input("Gib hier das Datum ein")
-  sterne=st.stars_input("Gib hier deine eigene bewertung ein")
+  sterne=st.stars("Gib hier deine eigene bewertung ein")
