@@ -14,4 +14,4 @@ if menue=="Aufzeichnen":
         eintrag_ort=st.text_input("Gib hier den Ort ein")
   datum=st.date_input("Gib hier das Datum ein")
   sterne=st.slider("Gib hier deine eigene Bewertung ein (1 Schlecht - 10 Gut)", 1, 10, 3)
-  gutes=st.text_input("Schreibe mind 1 gute sache vom Spiel auf")
+  gutes=st.text_input("Schreibe mind. 1 Gute Sache von deinem Spiel auf")
