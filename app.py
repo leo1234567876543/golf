@@ -15,11 +15,25 @@ if menue=="Aufzeichnen":
   datum=st.date_input("Gib hier das Datum ein")
   sterne=st.slider("Gib hier deine eigene Bewertung ein (1 Schlecht - 10 Gut)", 1, 10, 3)
   gutes=st.text_input("Schreibe mind. 1 Gute Sache von deinem Spiel auf")
-  if st.button("Speichern"):
-      datei=open("aufzeichnung.txt", "a")
-      schreiben = f"{eintrag_ort},{datum},{sterne},{gutes}\n"
+  
+import pandas as pd
+
+if "daten" not in st.session_state:
+    st.session_state.daten = []
+
+if st.button("Speichern"):
+    neuer_eintrag = {
+        "Ort": eintrag_ort,
+        "Datum": datum,
+        "Bewertung": sterne,
+        "Gut": gutes
+    }
+    st.session_state.daten.append(neuer_eintrag)
+    st.success("Gespeichert!")
+
+# Download anbieten
+if st.session_state.daten:
+    df = pd.DataFrame(st.session_state.daten)
+    st.download_button("Download CSV", df.to_csv(index=False), "golf.csv")
       
-      datei.write(schreiben)
-      datei.close()
       
-      st.success("Erfolgreich gespeichert!")
