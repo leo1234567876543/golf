@@ -12,4 +12,5 @@ if menue=="Aufzeichnen":
         eintrag_ort="Gastein"
   if ort=="In einen anderen Ort":
         eintrag_ort=st.text_input("Gib hier den Ort ein")
-  datum = st.date_input("Datum der Runde")
+  datum=st.date_input("Gib hier das Datum ein")
+  sterne=st.stars_input("Gib hier deine eigene bewertung ein")
