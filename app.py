@@ -1,54 +1,79 @@
 import streamlit as st
-import os
-
-st.title("Golf 🏌️⛳")
-st.text("Wähle aus")
-menue=st.sidebar.selectbox("Wähl bitte zwischen", ["Aufzeichnen", "Lesen"])
-
-if menue=="Aufzeichnen":
-  st.text("Neues Ereigniss eintragen")
-  ort=st.radio("Wähl hier bitte den Ort aus wo du gespielt hast", ["Gastein", "In einen anderen Ort"])
-  if ort=="Gastein":
-        eintrag_ort="Gastein"
-  if ort=="In einen anderen Ort":
-        eintrag_ort=st.text_input("Gib hier den Ort ein")
-  datum=st.date_input("Gib hier das Datum ein")
-  sterne=st.slider("Gib hier deine eigene Bewertung ein (1 Schlecht - 10 Gut)", 1, 10, 3)
-  gutes=st.text_input("Schreibe mind. 1 Gute Sache von deinem Spiel auf")
-  
 import pandas as pd
+import requests
+import base64
+import json
 
-uploaded_file = st.file_uploader("Lade deine bestehende CSV hoch (optional)", type=["csv"])
+# --- Einstellungen GitHub ---
+GITHUB_USER = "deinBenutzername"
+REPO = "deinRepoName"
+BRANCH = "main"  # oder master
+FILE_PATH = "aufzeichnung.csv"
+TOKEN = st.secrets["GITHUB_TOKEN"]  # sicher im Streamlit-Secrets speichern
 
-if uploaded_file is not None:
-    df = pd.read_csv(uploaded_file)
-else:
-    df = pd.DataFrame(columns=["Ort", "Datum", "Bewertung", "Gut"])
+# --- GitHub Funktionen ---
+def get_github_file():
+    url = f"https://api.github.com/repos/{GITHUB_USER}/{REPO}/contents/{FILE_PATH}?ref={BRANCH}"
+    r = requests.get(url, headers={"Authorization": f"token {TOKEN}"})
+    if r.status_code == 200:
+        content = base64.b64decode(r.json()["content"]).decode("utf-8")
+        df = pd.read_csv(pd.compat.StringIO(content))
+        sha = r.json()["sha"]
+        return df, sha
+    else:
+        # Datei existiert noch nicht
+        df = pd.DataFrame(columns=["Ort", "Datum", "Bewertung", "Gut"])
+        return df, None
 
-if "daten" not in st.session_state:
-    st.session_state.daten = []
-
-if st.button("Speichern"):
-    neuer_eintrag = {
-        "Ort": eintrag_ort,
-        "Datum": datum,
-        "Bewertung": sterne,
-        "Gut": gutes
+def update_github_file(df, sha=None):
+    url = f"https://api.github.com/repos/{GITHUB_USER}/{REPO}/contents/{FILE_PATH}"
+    content = df.to_csv(index=False)
+    content_b64 = base64.b64encode(content.encode()).decode()
+    data = {
+        "message": "Update Golf Aufzeichnung",
+        "content": content_b64,
+        "branch": BRANCH
     }
+    if sha:
+        data["sha"] = sha
+    r = requests.put(url, headers={"Authorization": f"token {TOKEN}"}, data=json.dumps(data))
+    return r.status_code == 201 or r.status_code == 200
 
-    df = pd.concat([df, pd.DataFrame([neuer_eintrag])], ignore_index=True)
+# --- Streamlit App ---
+st.title("Golf 🏌️⛳")
+menue = st.sidebar.selectbox("Wähl bitte zwischen", ["Aufzeichnen", "Lesen"])
 
-    st.success("Gespeichert!")
+# --- GitHub Datei laden ---
+df, sha = get_github_file()
 
-    st.download_button(
-        "Aktualisierte Datei herunterladen",
-        df.to_csv(index=False),
-        "golf.csv"
-    )
+if menue == "Aufzeichnen":
+    st.header("Neues Ereignis eintragen")
+    ort = st.radio("Ort auswählen", ["Gastein", "Anderer Ort"])
+    if ort == "Gastein":
+        eintrag_ort = "Gastein"
+    else:
+        eintrag_ort = st.text_input("Gib den Ort ein")
+    datum = st.date_input("Datum der Runde")
+    sterne = st.slider("Bewertung (1 schlecht - 10 gut)", 1, 10, 3)
+    gutes = st.text_input("Eine gute Sache vom Spiel")
 
-# Download anbieten
-if st.session_state.daten:
-    df = pd.DataFrame(st.session_state.daten)
-    st.download_button("Download CSV", df.to_csv(index=False), "golf.csv")
-      
-      
+    if st.button("Speichern"):
+        neuer_eintrag = {
+            "Ort": eintrag_ort,
+            "Datum": datum,
+            "Bewertung": sterne,
+            "Gut": gutes
+        }
+        df = pd.concat([df, pd.DataFrame([neuer_eintrag])], ignore_index=True)
+        success = update_github_file(df, sha)
+        if success:
+            st.success("✅ Runde erfolgreich in GitHub gespeichert!")
+        else:
+            st.error("❌ Fehler beim Speichern in GitHub")
+
+elif menue == "Lesen":
+    st.header("Alle Aufzeichnungen")
+    if df.empty:
+        st.info("Noch keine Daten vorhanden")
+    else:
+        st.dataframe(df)
