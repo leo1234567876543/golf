@@ -13,4 +13,4 @@ if menue=="Aufzeichnen":
   if ort=="In einen anderen Ort":
         eintrag_ort=st.text_input("Gib hier den Ort ein")
   datum=st.date_input("Gib hier das Datum ein")
-  sterne=st.slider("Gib hier deine eigene bewertung ein")
+  sterne=st.slider("Gib hier deine eigene Bewertung ein (1 Schlecht 10 Gut)", 1, 10, 3)
