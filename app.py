@@ -16,9 +16,9 @@ else:
 if menue == "Aufzeichnen":
     st.header("Neues Ereignis eintragen")
     ort_aus = st.radio("Trage hier den Ort ein",["Gastein", "Anderer Ort"])
-    if radio_input=="Gastein":
+    if ort_aus=="Gastein":
         ort="Gastein"
-    if radio_input=="Anderer Ort":
+    if ort_aus=="Anderer Ort":
         ort= st.text_input("Gib hier den Ort ein")
     datum = st.date_input("Datum")
     sterne = st.slider("Bewertung (1 schlecht - 10 gut)", 1, 10, 5)
