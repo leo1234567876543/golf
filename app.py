@@ -1,80 +1,34 @@
 import streamlit as st
 import pandas as pd
-import dropbox
-import io
-FILE_PATH = "/GolfApp/aufzeichnung.csv"  # / am Anfang!
-# --- Titel ---
-st.title("Golf 🏌️⛳")
 
-# --- Menü ---
-menue = st.sidebar.selectbox("Wähl bitte zwischen", ["Aufzeichnen", "Lesen"])
+st.title("Golf 🏌️⛳ - Einfacher Tracker")
 
-# --- Dropbox Setup ---
-DROPBOX_TOKEN = st.secrets["DROPBOX_TOKEN"]
-dbx = dropbox.Dropbox(DROPBOX_TOKEN)
+# Datei hochladen, falls schon vorhanden
+uploaded_file = st.file_uploader("Vorhandene CSV hochladen (optional)", type="csv")
 
-FILE_PATH = "/GolfApp/aufzeichnung.csv"
+if uploaded_file is not None:
+    df = pd.read_csv(uploaded_file)
+else:
+    df = pd.DataFrame(columns=["Ort", "Datum", "Bewertung", "Gut"])
 
-# --- CSV laden ---
-def load_data():
-    try:
-        metadata, res = dbx.files_download(FILE_PATH)
-        df = pd.read_csv(io.BytesIO(res.content))
-        return df
-    except:
-        return pd.DataFrame(columns=["Ort", "Datum", "Bewertung", "Gut"])
+# Neues Ereignis eintragen
+st.header("Neues Spiel eintragen")
+ort = st.text_input("Ort")
+datum = st.date_input("Datum")
+sterne = st.slider("Bewertung (1 schlecht - 10 gut)", 1, 10, 5)
+gut = st.text_input("Mind. 1 gute Sache")
 
-# --- CSV speichern ---
-def save_data(df):
-    csv_buffer = io.StringIO()
-    df.to_csv(csv_buffer, index=False)
-    dbx.files_upload(
-        csv_buffer.getvalue().encode(),
-        FILE_PATH,
-        mode=dropbox.files.WriteMode.overwrite
-    )
+if st.button("Speichern"):
+    if ort and gut:
+        neuer_eintrag = {
+            "Ort": ort,
+            "Datum": datum,
+            "Bewertung": sterne,
+            "Gut": gut
+        }
+        df = pd.concat([df, pd.DataFrame([neuer_eintrag])], ignore_index=True)
+        st.success("✅ Gespeichert!")
 
-# --- Daten laden ---
-df = load_data()
-
-# --- AUFZEICHNEN ---
-if menue == "Aufzeichnen":
-    st.header("Neues Ereignis eintragen")
-
-    ort = st.radio("Wähl hier bitte den Ort aus", ["Gastein", "Anderer Ort"])
-    if ort == "Gastein":
-        eintrag_ort = "Gastein"
-    else:
-        eintrag_ort = st.text_input("Gib hier den Ort ein")
-
-    datum = st.date_input("Gib hier das Datum ein")
-    sterne = st.slider("Bewertung (1 schlecht - 10 gut)", 1, 10, 5)
-    gutes = st.text_input("Schreibe mind. 1 gute Sache")
-
-    if st.button("Speichern"):
-        if eintrag_ort and gutes:
-            neuer_eintrag = {
-                "Ort": eintrag_ort,
-                "Datum": str(datum),
-                "Bewertung": sterne,
-                "Gut": gutes
-            }
-
-            df = pd.concat([df, pd.DataFrame([neuer_eintrag])], ignore_index=True)
-            save_data(df)
-
-            st.success("✅ Erfolgreich in Dropbox gespeichert!")
-        else:
-            st.error("Bitte alle Felder ausfüllen!")
-
-# --- LESEN ---
-elif menue == "Lesen":
-    st.header("Deine Golf Runden")
-
-    if df.empty:
-        st.info("Noch keine Einträge vorhanden.")
-    else:
-        df_anzeige = df.copy()
-        df_anzeige["Bewertung"] = df_anzeige["Bewertung"].apply(lambda x: "⭐"*int(x))
-
-        st.dataframe(df_anzeige)
+# CSV zum Download anbieten
+st.download_button("CSV herunterladen", df.to_csv(index=False), "golf.csv")
+st.dataframe(df)
