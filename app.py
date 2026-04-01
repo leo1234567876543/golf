@@ -2,16 +2,10 @@ import streamlit as st
 import pandas as pd
 from io import StringIO
 
-st.title("Golf 🏌️⛳ - Tracker für Oma")
+st.title("Golf 🏌️⛳")
 
-# ----------------------------
-# Sidebar-Menü: Lesen oder Schreiben
-# ----------------------------
-menue = st.sidebar.selectbox("Wähle:", ["Spielen aufzeichnen", "Daten ansehen"])
+menue = st.sidebar.selectbox("Wähle:", ["Aufzeichnen", "Daten ansehen"])
 
-# ----------------------------
-# CSV hochladen
-# ----------------------------
 uploaded_file = st.file_uploader("Vorhandene CSV hochladen (optional)", type=["csv"])
 
 if uploaded_file is not None:
@@ -19,12 +13,13 @@ if uploaded_file is not None:
 else:
     df = pd.DataFrame(columns=["Ort", "Datum", "Bewertung", "Gut"])
 
-# ----------------------------
-# Menü: Spielen aufzeichnen
-# ----------------------------
-if menue == "Spielen aufzeichnen":
-    st.header("Neues Spiel eintragen")
-    ort = st.text_input("Ort")
+if menue == "Aufzeichnen":
+    st.header("Neues Ereignis eintragen")
+    ort_aus = st.radio_input("Trage hier den Ort ein"["Gastein", "Anderer Ort"])
+    if radio_input=="Gastein":
+        ort="Gastein"
+    if radio_input=="Anderer Ort":
+        ort= st.text_input("Gib hier den Ort ein")
     datum = st.date_input("Datum")
     sterne = st.slider("Bewertung (1 schlecht - 10 gut)", 1, 10, 5)
     gut = st.text_input("Mind. 1 gute Sache")
