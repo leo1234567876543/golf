@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import dropbox
 import io
-
+FILE_PATH = "/GolfApp/aufzeichnung.csv"  # / am Anfang!
 # --- Titel ---
 st.title("Golf 🏌️⛳")
 
