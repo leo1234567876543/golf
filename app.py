@@ -1,16 +1,19 @@
 import streamlit as st
 import pandas as pd
-from io import StringIO
+from io import BytesIO
 
 st.title("Golf 🏌️⛳ - Einfacher Tracker für Oma")
 
-# CSV hochladen (optional)
-uploaded_file = st.file_uploader("Vorhandene CSV hochladen (optional)", type="csv")
+# CSV oder Excel hochladen (optional)
+uploaded_file = st.file_uploader("Vorhandene Excel-Datei hochladen (optional)", type=["xlsx", "csv"])
 
 if uploaded_file is not None:
-    df = pd.read_csv(uploaded_file)
+    if uploaded_file.name.endswith(".xlsx"):
+        df = pd.read_excel(uploaded_file)
+    else:
+        df = pd.read_csv(uploaded_file)
 else:
-    # Neue DataFrame, falls keine Datei hochgeladen
+    # Neue Tabelle, falls keine Datei hochgeladen
     df = pd.DataFrame(columns=["Ort", "Datum", "Bewertung", "Gut"])
 
 # Neues Spiel eintragen
@@ -28,7 +31,6 @@ if st.button("Speichern"):
             "Bewertung": sterne,
             "Gut": gut
         }
-        # Neuen Eintrag an bestehende DataFrame anhängen
         df = pd.concat([df, pd.DataFrame([neuer_eintrag])], ignore_index=True)
         st.success("✅ Gespeichert!")
 
@@ -36,12 +38,16 @@ if st.button("Speichern"):
 st.subheader("Alle bisherigen Einträge")
 st.dataframe(df)
 
-# CSV zum Download anbieten (immer alle Daten enthalten)
-csv_buffer = StringIO()
-df.to_csv(csv_buffer, index=False)
+# Excel-Datei zum Download anbieten (immer alle Daten enthalten)
+output = BytesIO()
+with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
+    df.to_excel(writer, index=False, sheet_name="GolfSpiele")
+    writer.save()
+    processed_data = output.getvalue()
+
 st.download_button(
-    label="CSV herunterladen (alle Daten)",
-    data=csv_buffer.getvalue(),
-    file_name="golf.csv",
-    mime="text/csv"
+    label="Excel herunterladen (alle Daten)",
+    data=processed_data,
+    file_name="golf.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 )
