@@ -15,7 +15,7 @@ else:
 
 if menue == "Aufzeichnen":
     st.header("Neues Ereignis eintragen")
-    ort_aus = st.radio_input("Trage hier den Ort ein"["Gastein", "Anderer Ort"])
+    ort_aus = st.radio_input("Trage hier den Ort ein",["Gastein", "Anderer Ort"])
     if radio_input=="Gastein":
         ort="Gastein"
     if radio_input=="Anderer Ort":
